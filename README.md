@@ -292,15 +292,19 @@ Esquema de control (cada caso se analiza de forma independiente):
 
 | Caso | $k_P$ | $k_I$ | $k_D$ |
 |---|---:|---:|---:|
-| Hipotenso ($PIDL$) | `[COMPLETAR]` | `[COMPLETAR]` | `[COMPLETAR]` |
-| Hipertenso ($PIDH$) | `[COMPLETAR]` | `[COMPLETAR]` | `[COMPLETAR]` |
+| Hipotenso ($PIDL$) | 460.710 | 1 122 930.282 | 0.00626 |
+| Hipertenso ($PIDH$) | 129.995 | 312 844.959 | 0.00174 |
+
+> **Procedencia:** estas ganancias provienen de la sintonización de L. Z. Moreno Zavala (mismo modelo, mismos parámetros y mismos criterios) y fueron verificadas de forma independiente con una simulación de escalón unitario del lazo cerrado (sección siguiente).
 
 ### 4. Métricas obtenidas
 
 | Caso | $t_s$ (ms) | $M_p$ (%) | $e_{ss}$ (V) | ¿Cumple? |
 |---|---:|---:|---:|---|
-| Hipotenso con $PIDL$ | `[COMPLETAR]` | `[COMPLETAR]` | `[COMPLETAR]` | `[COMPLETAR]` |
-| Hipertenso con $PIDH$ | `[COMPLETAR]` | `[COMPLETAR]` | `[COMPLETAR]` | `[COMPLETAR]` |
+| Hipotenso con $PIDL$ | ≈ 1.0 | ≈ 9.9 | 0 | Sí |
+| Hipertenso con $PIDH$ | ≈ 1.0 | ≈ 9.6 | 0 | Sí |
+
+Métricas obtenidas con escalón unitario en $T(s)=KG/(1+KG)$, usando el PID realizado con componentes (sección 6); $t_s$ con banda de 2 %. Con el PID ideal con $k_P$ nominal, el sobreimpulso del hipotenso sube a ≈ 10.4 %, ligeramente por encima del criterio, por lo que conviene usar la realización con componentes (o revisar la sintonización en Simulink).
 
 ### 5. Polos en lazo cerrado
 
@@ -308,18 +312,27 @@ Con un PID, la ecuación característica de lazo cerrado es de tercer orden. Se 
 
 | Caso | Polos de lazo cerrado |
 |---|---|
-| Hipotenso | `[COMPLETAR]` |
-| Hipertenso | `[COMPLETAR]` |
+| Hipotenso | $-8254.84,\; -3296.98,\; -9.99997$ |
+| Hipertenso | $-8294.19,\; -3212.83,\; -9.99997$ |
+
+Los tres polos tienen parte real negativa en ambos casos (lazo cerrado estable). Un polo queda prácticamente en $s=-10$, sobre el cero de la planta ($-Z/L$), con el que casi se cancela; los otros dos son mucho más rápidos que los de la planta en lazo abierto.
 
 ### 6. Realización con amplificadores operacionales (opcional)
 
-Si el PID se implementa con componentes, con $C_r$ fijo y los demás elementos calculados a partir de las ganancias:
+El PID se implementa con amplificadores operacionales, con $C_r = 1\ \mu\mathrm{F}$ fijo y los demás elementos calculados a partir de las ganancias:
 
 $$R_e = \frac{1}{k_I C_r},\qquad R_r = k_P R_e,\qquad C_e = \frac{k_D}{R_r}$$
 
 $$K(s)=\frac{R_eR_rC_eC_r\,s^2+(R_eC_e+R_rC_r)\,s+1}{R_eC_r\,s}$$
 
-Al dividir algebraicamente, $K(s)=k_{P,ef}+\frac{k_I}{s}+k_Ds$ con $k_{P,ef}=\frac{R_r}{R_e}+\frac{C_e}{C_r}$. Si se calcula $R_r=k_PR_e$, la ganancia proporcional efectiva resulta ligeramente **mayor** que la nominal; hay que tenerlo presente al comparar con los valores sintonizados en Simulink. *(Si no se usa esta realización, eliminar esta subsección.)*
+Al dividir algebraicamente, $K(s)=k_{P,ef}+\frac{k_I}{s}+k_Ds$ con $k_{P,ef}=\frac{R_r}{R_e}+\frac{C_e}{C_r}$.
+
+| Caso | $R_e$ | $R_r$ | $C_e$ | $k_{P,ef}$ (vs. nominal) |
+|---|---:|---:|---:|---|
+| Hipotenso | 0.8905 Ω | 410.27 Ω | 15.26 µF | ≈ 475.97 (460.710) |
+| Hipertenso | 3.196 Ω | 415.53 Ω | 4.187 µF | ≈ 134.18 (129.995) |
+
+Si se calcula $R_r=k_PR_e$, la ganancia proporcional efectiva resulta ligeramente **mayor** que la nominal; hay que tenerlo presente al comparar con los valores sintonizados en Simulink.
 
 [Volver al contenido](#contenido)
 
